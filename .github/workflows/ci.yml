@@ -1,0 +1,41 @@
+name: CI for ML Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.10
+
+      - name: Set up Miniconda
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: ml-pipeline-env
+          environment-file: environment.yml
+          python-version: 3.10
+
+      - name: Install Additional Dependencies
+        run: |
+          conda activate ml-pipeline-env
+          pip install flake8 pytest
+
+      - name: Lint with Flake8
+        run: |
+          conda activate ml-pipeline-env
+          flake8 .
+
+      - name: Run Tests with Pytest
+        run : |
+          conda activate ml-pipeline-env
+          pytest                          
